@@ -1,84 +1,85 @@
+const { request } = require("express")
 const express = require("express")
 const app = express()
 const md5 = require("md5")
-const{auth} = require("./login")
 app.use(express.json())
 
-//app.use(auth)
+const {auth} = require("./login")
+app.use(auth)
 
 const models = require("../models/index")
 const users = models.users
 
-
-// endpoint get data users
-app.get("/", async(request, response) => {
+app.get("/", async (request, response) => {
     let dataUsers = await users.findAll()
+
     return response.json(dataUsers)
 })
 
-// endpoint insert new users
 app.post("/", (request,response) => {
     let newUsers = {
-        nama: request.body.nama,
-        username: request.body.username,
-        password: md5(request.body.password),
-        role: request.body.role
+       nama: request.body.nama,
+       username: request.body.username,
+       password: md5(request.body.password),
+       role: request.body.role
     }
+
     users.create(newUsers)
     .then(result => {
-        return response.json({
-            message: `Data berhasil ditambahkan`,
-            data: result
+        response.json({
+            message: 'Data berhasil ditambahkan'
         })
     })
     .catch(error => {
-        return response.json({
+        response.json({
             message: error.message
         })
     })
 })
 
-// endpoint update users
-app.put("/:id_user", (request,response) => {
-    let data = {
-        nama: request.body.nama,
-        username: request.body.username,
-        role: request.body.role
+app.put("/:id_user", (request, response)=>{
+
+    let data ={
+       nama: request.body.nama,
+       username: request.body.username,
+       role: request.body.role
     }
+
     if (request.body.password) {
         data.password = md5(request.body.password)
     }
-    let parameter = {
+
+    let parameter={
         id_user: request.params.id_user
     }
+
     users.update(data, {where: parameter})
     .then(result => {
         return response.json({
-            message: `Data berhasil diubah`,
-            data: result
+            message: `Data Berhasil Diubah`,
+            data:result
         })
     })
-    .catch(error => {
+    .catch(error =>{
         return response.json({
-            message: error.message
+            message:error.message
         })
     })
 })
 
-// endpoint hapus data user
-app.delete("/:id_user", (request,response) => {
-    
-    
+app.delete("/:id_users", (request,response) => {
     let parameter = {
-        id_user: request.params.id_user
+        id_users: request.params.id_users
     }
+
     users.destroy({where: parameter})
-    .then(result => {
-        return response.json({
-            message: `Data berhasil dihapus`,
+    .then(result => { 
+        return response.json({ 
+            message: `Data Berhasil Dihapus`,
             data: result
         })
     })
+
     .catch(error => {
         return response.json({
             message: error.message

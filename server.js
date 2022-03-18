@@ -1,22 +1,21 @@
 const express = require("express")
-const cors = require("cors")
 const app = express()
+const cors = require("cors")
+app.use(cors());
 
-app.use(cors())
-
-// panggil router member
 const member = require("./routers/member")
-const users = require("./routers/users")
 const paket = require("./routers/paket")
+const users = require("./routers/users")
 const transaksi = require("./routers/transaksi")
-const login = require("./routers/login")
+const { login } = require("./routers/login")
 
-app.use("/api/member", member)
-app.use("/api/users", users)
-app.use("/api/paket", paket)
-app.use("/api/transaksi", transaksi)
-app.use("/api/auth", login)
+app.use ("/member", member)
+app.use ("/paket", paket)
+app.use ("/users", users)
+app.use ("/transaksi", transaksi)
+app.use ("/login", login)
 
-app.listen(8000,() => {
-    console.log(`Server run on port 8000`);
+
+app.listen(8000, () => {
+    console.log(`server run on port 8000`);
 })

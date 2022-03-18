@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const app = require('../routers/member');
 module.exports = (sequelize, DataTypes) => {
   class paket extends Model {
     /**

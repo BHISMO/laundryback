@@ -1,8 +1,10 @@
-const { response } = require("express")
+const { response, request } = require("express")
 const express = require("express")
 const app = express()
+const {auth} = require("./login")
 
 app.use(express.json())
+app.use(auth)
 
 const models = require("../models/index")
 const transaksi = models.transaksi
@@ -22,29 +24,6 @@ app.get("/", async (request, response)  => {
         ]
     })
     return response.json(dataTransaksi)
-})
-
-app.get("/bayar/:id_transaksi", (request, response) => {
-    let parameter = {
-        id_transaksi: request.params.id_transaksi
-    }
-
-    let data = {
-        tgl_bayar: new Date().toISOString().split("T")[0],
-        dibayar: true
-    }
-
-    transaksi.update(data, {where: parameter})
-    .then(result => {
-        return response.json({
-            message: `Transaksi Telah Dibayar`
-        })
-    })
-    .catch(error => {
-        return response.json({
-            message: error.message
-        })
-    })
 })
 
 app.post("/", (request, response) => {
@@ -73,12 +52,7 @@ app.post("/", (request, response) => {
                 message: `Data Transaksi Berhasil Ditambahkan`
             })
         })
-    .catch(error => {
-        return response.json({
-            message: error.message
-        })
     })
-})
     .catch(error => {
         return response.json({
             message: error.message
@@ -104,7 +78,6 @@ app.put("/:id_transaksi", async (request, response) => {
     transaksi.update(dataTransaksi, {where: parameter})
     .then(async (result) => {
         await detail_transaksi.destroy({where: parameter})
-    
         
         let detail = request.body.detail_transaksi
         for (let i = 0; i < detail.length; i++) {
@@ -168,7 +141,7 @@ app.post("/status/:id_transaksi", (request,response) => {
     transaksi.update(data, {where: parameter})
     .then(result => {
         return response.json({
-            message: `Transaksi Telah Dibayar`
+            message: `Data Status Berhasil Diubah`
         })
     })
     .catch(error => {
@@ -191,7 +164,7 @@ app.get("/bayar/:id_transaksi", (request, response) => {
     transaksi.update(data, {where: parameter})
     .then(result => {
         return response.json({
-            message: `Transaksi Berhasil Diubah`
+            message: `Transaksi Telah Dibayar`
         })
     })
     .catch(error => {

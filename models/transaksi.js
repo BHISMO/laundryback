@@ -10,24 +10,25 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsTo(models.member,{
+      // define association here
+      this.belongsTo(models.member, {
         foreignKey: "id_member", as: "member"
+      })
+
+      this.belongsTo(models.users,{
+        foreignKey: "id_user", as: "user"
       })
 
       this.hasMany(models.detail_transaksi,{
         foreignKey: "id_transaksi", as: "detail_transaksi"
       })
-
-      this.belongsTo(models.users,{
-        foreignKey: "id_user", as: "users"
-      })
     }
   };
   transaksi.init({
-    id_transaksi: {
-      type: DataTypes.INTEGER,
+    id_transaksi: {type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
+
     },
     id_member: DataTypes.INTEGER,
     tgl: DataTypes.DATE,
@@ -39,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'transaksi',
-    tableName: 'transaksi'
+    tableName: `transaksi`
   });
   return transaksi;
 };

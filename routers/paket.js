@@ -1,16 +1,14 @@
 const express = require("express")
 const app = express()
+const {auth} = require("./login")
 
-// membaca request dari body dengan tipe json
 app.use(express.json())
+app.use(auth)
 
-// panggil routers
 const models = require("../models/index")
 
-// panggil router "paket"
 const paket = models.paket
 
-// endpoint for get all user
 app.get("/", async (request, response) => {
     let dataPaket = await paket.findAll()
 
@@ -36,7 +34,6 @@ app.post("/", (request,response) => {
     })
 })
 
-// endpoint update data user
 app.put("/:id_paket", (request, response)=>{
 
     let data ={
@@ -62,7 +59,6 @@ app.put("/:id_paket", (request, response)=>{
     })
 })
 
-// endpoint hapus data user
 app.delete("/:id_paket", (request,response) => {
     let parameter = {
         id_paket: request.params.id_paket
@@ -76,7 +72,9 @@ app.delete("/:id_paket", (request,response) => {
     })
 
     .catch(error => {
-        message: error.message
+        return response.json({
+            message: error.message
+        })
     })
 })
 

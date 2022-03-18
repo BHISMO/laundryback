@@ -1,37 +1,34 @@
 const express = require("express")
 const app = express()
-const {auth} = require("./login")
 
-// membaca request dari body dengan tipe json
 app.use(express.json())
-//app.use(auth)
 
-// panggil models
 const models = require("../models/index")
 
-// panggil model "member"
 const member = models.member
 
-// endpoint for get all member
+const {auth} = require("./login")
+
+app.use(auth)
+
 app.get("/", async (request, response) => {
     let dataMember = await member.findAll()
 
     return response.json(dataMember)
 })
 
-// endpoint add new member
-app.post("/", (request, response) => {
+app.post("/", (request,response) => {
     let newMember = {
         nama: request.body.nama,
         alamat: request.body.alamat,
-        jenis_kelamin: request.body.jenis_kelamin,
-        telepon: request.body.telepon
+        jenis_kelamin:request.body.jenis_kelamin,
+        telepon:request.body.telepon
     }
 
     member.create(newMember)
     .then(result => {
         response.json({
-            message: `Data berhasil ditambahkan`
+            message: 'Data berhasil ditambahkan'
         })
     })
     .catch(error => {
@@ -39,57 +36,52 @@ app.post("/", (request, response) => {
             message: error.message
         })
     })
-
 })
 
-// endpoint update data member
-app.put("/:id_member", (request, response) => {
-    // tampung data yg akan diubah
-    let data = {
+app.put("/:id_member", (request, response)=>{
+    // tampung data  yang akan diubah
+    let data ={
         nama: request.body.nama,
         alamat: request.body.alamat,
         telepon: request.body.telepon,
         jenis_kelamin: request.body.jenis_kelamin
     }
 
-    let parameter = {
+    let parameter={
         id_member: request.params.id_member
     }
 
-    // proses update
+    //proses update
     member.update(data, {where: parameter})
     .then(result => {
         return response.json({
-            message: `Data berhasil diubah`,
-            data: result
+            message:`data berhasil diubah`,
+            data:result
         })
     })
-    .catch(error => {
+    .catch(error =>{
         return response.json({
-            message: error.message
+            message:error.message
         })
     })
 })
 
-// endpoint hapus data member
 app.delete("/:id_member", (request,response) => {
-    // tampung data yg akan dihapus
     let parameter = {
         id_member: request.params.id_member
     }
 
-    // proses hapus
     member.destroy({where: parameter})
-    .then(result => {
-        return response.json({
-            message: `Data berhasil dihapus`
+    .then(result => { 
+        return response.json({ 
+            message:  `Data Berhasil Dihapus`
         })
     })
+
     .catch(error => {
         return response.json({
             message: error.message
         })
     })
 })
-
 module.exports = app

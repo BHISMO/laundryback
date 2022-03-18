@@ -1,15 +1,15 @@
 const express = require("express")
-const app = express()
 const md5 = require("md5")
-app.use(express.json())
+const login = express()
+login.use(express.json())
 const jwt = require("jsonwebtoken")
-const secretKey = "averageenjoyer"
+const secretKey = "toshinori"
 
 const models = require("../models/index")
-const { response } = require("express")
+const { response, request } = require("express")
 const user = models.users;
 
-app.post('/',async (request, response) => {
+login.post('/', async (request, response) => {
     let newLogin = {
         username :request.body.username,
         password :md5(request.body.password), 
@@ -23,13 +23,41 @@ app.post('/',async (request, response) => {
         let token = jwt.sign(payload,secretKey)
         return response.json({
             logged: true,
-            token: token
+            token: token,
+            user: dataUser
         })
-    }else {
+
+    } else {
         return response.json({
             logged: false,
-            message: `Invalid username or password`
+            message: `Invalid Username Or Password`
         })
     }
 })
-module.exports = app
+
+const auth = (request, response, next) => {
+    let header = request.headers.authorization
+    let token = header && header.split(" ")[1]
+
+    if(token == null) {
+        return response.status(401).json({
+            message: `Unauthorized`
+        })
+    } else {
+        let jwtHeader = {
+            algorithm: "HS356"
+        }
+    
+        jwt.verify(token, secretKey, jwtHeader,error => {
+            if(error) {
+                return response.status(401).json({
+                    message: `Invalid Token`
+                })
+            } else {
+                next()
+            }
+        })
+    }
+}
+
+module.exports = { login, auth }
